@@ -2,7 +2,7 @@
 
 A command-line chatbot that cleans up my Gmail. Name a sender or subject, review what it found, confirm, and the emails move to Trash.
 
-Runs locally on Llama 3.2 (via Ollama), so your email never touches a cloud AI service.
+Runs locally on Llama 3.2 (via Ollama)
 
 ## Features
 

@@ -36,7 +36,7 @@ Llama 3.2 turns user input into a search term. Everything else (searching Gmail,
    python chat.py
    ```
 
-## Roadmap
+## Next Steps
 
 - Date filters (e.g. "first 100 emails from xyz " or "everything from xyz before 2025")
 - Automatic unsubscribe using the `List-Unsubscribe` header

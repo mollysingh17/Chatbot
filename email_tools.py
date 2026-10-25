@@ -30,26 +30,37 @@ def _matches(msg, text, mode):
     return text in (msg.from_ or "").lower() or text in (name or "").lower()
 
 
-def search_emails(text: str, mode: str = "sender"):
-    """Find emails by sender (name or address) or by subject line."""
+def search_emails(text, mode="sender", before=None, after=None,
+                  count=None, order="oldest"):
+    """Find emails by sender or subject, optionally filtered by date and count."""
     text = str(text).strip().lower()
-    criteria = AND(subject=text) if mode == "subject" else AND(from_=text)
+    kwargs = {"subject": text} if mode == "subject" else {"from_": text}
+    if before:
+        kwargs["date_lt"] = before
+    if after:
+        kwargs["date_gte"] = after
+
     with _login() as mailbox:
-        msgs = list(mailbox.fetch(criteria, headers_only=True, bulk=True))
+        msgs = list(mailbox.fetch(AND(**kwargs), headers_only=True, bulk=True))
     msgs = [m for m in msgs if _matches(m, text, mode)]
+    msgs.sort(key=lambda m: m.date.timestamp(), reverse=(order == "newest"))
+
     trashable = [m for m in msgs if not _is_protected(m.subject)]
     protected = [m for m in msgs if _is_protected(m.subject)]
+    if count:
+        trashable = trashable[:count]
+
     return {
         "count": len(trashable),
         "protected": len(protected),
         "uids": [m.uid for m in trashable],
-        "samples": [f"{m.from_} | {m.subject}" for m in trashable],
-        "protected_samples": [m.subject for m in protected],
         "protected_uids": [m.uid for m in protected],
+        "samples": [f"{m.date:%Y-%m-%d} | {m.from_} | {m.subject}" for m in trashable],
+        "protected_samples": [m.subject for m in protected],
     }
 
 
-def trash_uids(uids, batch: int = 50):
+def trash_uids(uids, batch=50):
     """Move exactly these emails to Trash, a few at a time."""
     moved = 0
     with _login() as mailbox:

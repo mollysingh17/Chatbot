@@ -41,4 +41,4 @@ Llama 3.2 turns user input into a search term. Everything else (searching Gmail,
 - Date filters (e.g. "first 100 emails from xyz " or "everything from xyz before 2025") (done)
 - Automatic unsubscribe using the `List-Unsubscribe` header
 - Optionally search All Mail, not just the Inbox
-- Conversational replies
+- Casual replies at the confirmation step (e.g. "delete the protected ones too, except the Navy Federal one")
